@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Clion
+.idea
+
+# VS Code
+.vscode
+
+# Cmake
+cmake-build-*
