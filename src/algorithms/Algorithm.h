@@ -27,7 +27,7 @@ namespace hpxdistributed::algorithms {
         };
         virtual StatusCode initialize(EventContext &) = 0;
         virtual StatusCode operator()(EventContext &) = 0;
-        [[nodiscard]] const decltype(_name) &getName() const { return _name; }
+        [[nodiscard]] const decltype(_name) &get_name() const { return _name; }
     };
 }// namespace hpxdistributed::algorithms
 
