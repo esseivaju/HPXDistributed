@@ -23,8 +23,11 @@ public:
     }
 
     [[nodiscard]] double eta() const { return _eta; };
+    [[nodiscard]] double& eta() { return _eta; };
     [[nodiscard]] double phi() const { return _phi; };
+    [[nodiscard]] double& phi() { return _phi; };
     [[nodiscard]] IDType id() const { return _id; };
+    [[nodiscard]] IDType& id() { return _id; };
 
 private:
     friend class hpx::serialization::access;

@@ -18,11 +18,11 @@ namespace algs = hpxdistributed::algorithms;
 using Inputs = std::vector<std::string>;
 
 
-void print_dependencies(const std::unordered_map<std::string, std::optional<Inputs>> &dependencies) {
+void print_dependencies(const std::unordered_map<std::string, Inputs> &dependencies) {
     for (auto &k: dependencies) {
         hpx::cout << "Dependency: " << k.first << " -> ";
-        if (k.second.has_value()) {
-            for (auto &i: k.second.value()) {
+        if (!k.second.empty()) {
+            for (auto &i: k.second) {
                 hpx::cout << i << " ";
             }
             hpx::cout << std::endl;
@@ -45,12 +45,12 @@ int main(int argc, char *argv[]) {
     auto algo_d_name{algs::AlgorithmD{}.get_name()};
     auto algo_e_name{algs::AlgorithmE{}.get_name()};
     //build dependencies graph
-    std::unordered_map<std::string, std::optional<Inputs>> dependencies{
-            {algo_a_name, std::optional<Inputs>{}},
-            {algo_b_name, std::make_optional<Inputs>(std::vector{algo_a_name})},
-            {algo_c_name, std::make_optional<Inputs>(std::vector{algo_a_name})},
-            {algo_d_name, std::make_optional<Inputs>(std::vector{algo_b_name, algo_c_name})},
-            {algo_e_name, std::make_optional<Inputs>(std::vector{algo_b_name})}};
+    std::unordered_map<std::string, Inputs> dependencies{
+            {algo_a_name, {}},
+            {algo_b_name, std::vector{algo_a_name}},
+            {algo_c_name, std::vector{algo_a_name}},
+            {algo_d_name, std::vector{algo_b_name, algo_c_name}},
+            {algo_e_name, std::vector{algo_b_name}}};
     print_dependencies(dependencies);
 
     auto factor = std::stoul(argv[1]);
@@ -72,10 +72,10 @@ int main(int argc, char *argv[]) {
     auto end_scheduling{std::chrono::high_resolution_clock::now()};
     hpx::wait_all(futures);
     auto end_work{std::chrono::high_resolution_clock::now()};
-    //    hpx::cout << "Result: " << std::endl;
-    //    for (auto &f: _futures) {
-    //        hpx::cout << f.get() << std::endl;
-    //    }
+//        hpx::cout << "Result: " << std::endl;
+//        for (auto &f: futures) {
+//            hpx::cout << f.get() << std::endl;
+//        }
     hpx::cout << "Total time to schedule: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_scheduling - start).count() << "ms" << std::endl;
     hpx::cout << "Total time to process: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - start).count() << "ms" << std::endl;
     hpx::cout << "Time between scheduling end and processing end: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - end_scheduling).count() << "ms" << std::endl;

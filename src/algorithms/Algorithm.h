@@ -12,13 +12,9 @@ namespace hpxdistributed::algorithms {
     class Algorithm {
 
         std::string _name;
-
-    protected:
-        virtual ~Algorithm() = default;
-
     public:
-        explicit Algorithm(decltype(_name) &&name) : _name(std::move(name)) {}
-        explicit Algorithm(decltype(_name) &name) : _name(name) {}
+        virtual ~Algorithm() = default;
+        explicit Algorithm(decltype(_name) name) : _name(std::move(name)) { }
         using status_code = uint8_t;
         enum class StatusCode : status_code {
             SUCCESS = 0,

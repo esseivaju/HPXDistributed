@@ -15,12 +15,7 @@ namespace hpxdistributed::scheduler {
     hpx::shared_future<EventContext> &Scheduler::retrieve(const EventContext::IDType &id) {
         return _futures.at(id);
     }
-    Scheduler::Scheduler(decltype(_algorithms_dependencies) &algorithms_dependencies)
-        : _workers{hpx::new_<WorkerClient[]>(hpx::binpacked(hpx::find_all_localities()), hpx::get_num_localities().get(), 200).get()},
-          _algorithms_dependencies(algorithms_dependencies) { std::cout << "Scheduler created by copy" << std::endl; }
-    Scheduler::Scheduler(decltype(_algorithms_dependencies) &&algorithms_dependencies)
-        : _workers{hpx::new_<WorkerClient[]>(hpx::binpacked(hpx::find_all_localities()), hpx::get_num_localities().get(), 200).get()},
-          _algorithms_dependencies(std::move(algorithms_dependencies)) {
-        std::cout << "Scheduler created by move" << std::endl;
-    }
+    Scheduler::Scheduler(AlgorithmsDependencies algorithms_dependencies)
+        : _algorithms_dependencies(std::move(algorithms_dependencies)),
+          _workers{hpx::new_<WorkerClient[]>(hpx::binpacked(hpx::find_all_localities()), hpx::get_num_localities().get(), 200, _algorithms_dependencies).get()} { }
 }// namespace hpxdistributed::scheduler
