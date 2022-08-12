@@ -1,20 +1,23 @@
 #ifndef HPXDISTRIBUTED_WORKER_H
 #define HPXDISTRIBUTED_WORKER_H
 
+#include "EventContext.h"
 #include <hpx/include/components.hpp>
+#include <hpx/future.hpp>
+#include <chrono>
 
 namespace hpxdistributed {
     namespace components::details {
         class Worker : public hpx::components::component_base<Worker> {
 
         public:
-            explicit Worker(int data) : data{data} {}
+            explicit Worker(std::chrono::milliseconds::rep time) : _process_time{time} {}
 
-            int identity() const;
+            EventContext schedule_event(EventContext const& eventContext);
 
-            HPX_DEFINE_COMPONENT_ACTION(Worker, identity, identity_action);
+            HPX_DEFINE_COMPONENT_ACTION(Worker, schedule_event, schedule_event_action);
         private:
-            int data;
+            std::chrono::milliseconds::rep _process_time;
 
         };
     }
@@ -29,11 +32,14 @@ class WorkerClient : public hpx::components::client_base<WorkerClient, component
         explicit WorkerClient(hpx::id_type &&f)
                 : base_type(std::move(f)) {}
 
-        hpx::future<int> identity();
+        hpx::shared_future<EventContext> schedule_event(EventContext const& eventContext);
     };
 }
 
-HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::details::Worker::identity_action,
-                                worker_identity_action);
+HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::details::Worker::schedule_event_action,
+                                worker_schedule_event_action);
+
+using WorkerServer = hpxdistributed::components::details::Worker;
+HPX_REGISTER_COMPONENT(hpx::components::component<WorkerServer>, WorkerComponent);
 
 #endif //HPXDISTRIBUTED_WORKER_H
