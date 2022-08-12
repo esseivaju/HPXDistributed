@@ -15,4 +15,4 @@ add_subdirectory(src/components)
 add_subdirectory(src/scheduler)
 
 add_executable(HPXDistributed src/main.cpp)
-target_link_libraries(HPXDistributed Scheduler DataModel HPX::hpx HPX::wrap_main Boost::boost fmt::fmt HPX::iostreams_component compile_features)
+target_link_libraries(HPXDistributed Scheduler Algorithms DataModel HPX::hpx HPX::wrap_main Boost::boost fmt::fmt HPX::iostreams_component compile_features)
