@@ -1,14 +1,14 @@
 #ifndef HPXDISTRIBUTED_WORKER_H
 #define HPXDISTRIBUTED_WORKER_H
 
-#include "EventContext.h"
 #include "Algorithm.h"
+#include "EventContext.h"
 #include <chrono>
 #include <hpx/future.hpp>
 #include <hpx/include/components.hpp>
-#include <utility>
 #include <iostream>
 #include <memory>
+#include <utility>
 
 namespace hpxdistributed {
     namespace components::details {

@@ -12,7 +12,7 @@ namespace hpxdistributed::algorithms {
     class AlgorithmB : public Algorithm {
     public:
         AlgorithmB();
-        StatusCode initialize(EventContext &context) override;
+        StatusCode initialize() override;
         StatusCode operator()(EventContext &context) override;
     };
 

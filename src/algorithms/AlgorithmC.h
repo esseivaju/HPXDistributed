@@ -11,7 +11,7 @@ namespace hpxdistributed::algorithms {
     class AlgorithmC : public Algorithm {
     public:
         AlgorithmC();
-        StatusCode initialize(EventContext &context) override;
+        StatusCode initialize() override;
         StatusCode operator()(EventContext &context) override;
     };
 

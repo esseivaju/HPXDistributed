@@ -6,7 +6,7 @@
 
 namespace hpxdistributed::algorithms {
     using enum Algorithm::StatusCode;
-    Algorithm::StatusCode AlgorithmC::initialize(EventContext &context) {
+    Algorithm::StatusCode AlgorithmC::initialize() {
         return SUCCESS;
     }
     Algorithm::StatusCode AlgorithmC::operator()(EventContext &context) {

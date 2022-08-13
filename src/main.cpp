@@ -72,10 +72,10 @@ int main(int argc, char *argv[]) {
     auto end_scheduling{std::chrono::high_resolution_clock::now()};
     hpx::wait_all(futures);
     auto end_work{std::chrono::high_resolution_clock::now()};
-//        hpx::cout << "Result: " << std::endl;
-//        for (auto &f: futures) {
-//            hpx::cout << f.get() << std::endl;
-//        }
+    //        hpx::cout << "Result: " << std::endl;
+    //        for (auto &f: futures) {
+    //            hpx::cout << f.get() << std::endl;
+    //        }
     hpx::cout << "Total time to schedule: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_scheduling - start).count() << "ms" << std::endl;
     hpx::cout << "Total time to process: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - start).count() << "ms" << std::endl;
     hpx::cout << "Time between scheduling end and processing end: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - end_scheduling).count() << "ms" << std::endl;

@@ -2,7 +2,8 @@
 #include "AlgorithmsImpl.h"
 
 #include <chrono>
-#include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <thread>
 
 HPX_REGISTER_COMPONENT_MODULE()
@@ -18,10 +19,11 @@ namespace hpxdistributed {
             eventContext.phi() *= 2;
             return eventContext;
         }
-        Worker::Worker(std::chrono::milliseconds::rep time, Worker::AlgorithmsDependencies deps)  : _process_time{time}, _deps{std::move(deps)}, _algorithms{} {
+        Worker::Worker(std::chrono::milliseconds::rep time, Worker::AlgorithmsDependencies deps) : _process_time{time}, _deps{std::move(deps)}, _algorithms{} {
             namespace algs = hpxdistributed::algorithms;
-            auto insert_algo{[&] (std::unique_ptr<algs::Algorithm> alg) {
-                auto name {alg->get_name()};
+            using enum algs::Algorithm::StatusCode;
+            auto insert_algo{[&](std::unique_ptr<algs::Algorithm> alg) {
+                auto name{alg->get_name()};
                 _algorithms.insert({std::move(name), std::move(alg)});
             }};
             insert_algo(std::make_unique<algs::AlgorithmA>());
@@ -29,6 +31,13 @@ namespace hpxdistributed {
             insert_algo(std::make_unique<algs::AlgorithmC>());
             insert_algo(std::make_unique<algs::AlgorithmD>());
             insert_algo(std::make_unique<algs::AlgorithmE>());
+            for (auto &algo: _algorithms) {
+                if (algo.second->initialize() == FAILURE) {
+                    std::stringstream ss;
+                    ss << "Failed to initialize algorithm " << algo.first;
+                    throw std::runtime_error(ss.str());
+                }
+            }
         }
     }// namespace components::details
 
