@@ -44,7 +44,7 @@ namespace hpxdistributed {
     }// namespace components::details
 
     hpx::shared_future<EventContext> WorkerClient::schedule_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested) {
-        WorkerServer ::schedule_event_action act;
+        WorkerServer::schedule_event_action act;
         return hpx::async(act, get_id(), eventContext, requested);
     }
 }// namespace hpxdistributed
