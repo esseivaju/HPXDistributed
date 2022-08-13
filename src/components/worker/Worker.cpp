@@ -13,7 +13,9 @@ HPX_REGISTER_ACTION(WorkerServer::schedule_event_action, worker_schedule_event_a
 namespace hpxdistributed {
 
     namespace components::details {
-        EventContext Worker::schedule_event(EventContext eventContext) {
+        EventContext Worker::schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
+            // TODO: From the requested algorithms and dependencies map, we need to compose the execution graph and run it.
+            // TODO: This should only return when all the requested output have been computed.
             std::this_thread::sleep_for(std::chrono::milliseconds{_process_time});
             eventContext.eta() *= 2;
             eventContext.phi() *= 2;
@@ -41,8 +43,8 @@ namespace hpxdistributed {
         }
     }// namespace components::details
 
-    hpx::shared_future<EventContext> WorkerClient::schedule_event(const EventContext &eventContext) {
+    hpx::shared_future<EventContext> WorkerClient::schedule_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested) {
         WorkerServer ::schedule_event_action act;
-        return hpx::async(act, get_id(), eventContext);
+        return hpx::async(act, get_id(), eventContext, requested);
     }
 }// namespace hpxdistributed
