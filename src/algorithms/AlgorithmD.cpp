@@ -9,8 +9,5 @@ namespace hpxdistributed::algorithms {
     Algorithm::StatusCode AlgorithmD::initialize() {
         return SUCCESS;
     }
-    Algorithm::StatusCode AlgorithmD::operator()(EventContext &context) {
-        return SUCCESS;
-    }
-    AlgorithmD::AlgorithmD() : Algorithm("AlgorithmD") {}
+    AlgorithmD::AlgorithmD() : Algorithm(80, 5, "AlgorithmD") {}
 }// namespace hpxdistributed::algorithms

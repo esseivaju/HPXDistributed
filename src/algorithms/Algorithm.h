@@ -7,16 +7,25 @@
 
 #include "EventContext.h"
 #include <string>
+#include <utility>
+#include <typeindex>
+#include <random>
+#include <cmath>
 
 namespace hpxdistributed::algorithms {
     class Algorithm {
-
+    protected:
+        double _meanCpuTime {100.};
+        double _rmsCpuTime {5.};
+        std::default_random_engine _random;
+        std::normal_distribution<double> _distribution;
         std::string _name;
-
+        [[nodiscard]] double burn(unsigned long) const;
     public:
         virtual ~Algorithm() = default;
-        explicit Algorithm(decltype(_name) name) : _name(std::move(name)) {}
-        using id_t = decltype(_name);
+        explicit Algorithm(decltype(_name));
+        Algorithm(decltype(_meanCpuTime), decltype(_rmsCpuTime), decltype(_name));
+        using id_t = std::string;
         using status_code = uint8_t;
         enum class StatusCode : status_code {
             SUCCESS = 0,
@@ -24,9 +33,10 @@ namespace hpxdistributed::algorithms {
             UNKNOWN = 2
         };
         virtual StatusCode initialize() = 0;
-        virtual StatusCode operator()(EventContext &) = 0;
+        virtual StatusCode operator()(EventContext &);
         [[nodiscard]] const decltype(_name) &get_name() const { return _name; }
     };
 }// namespace hpxdistributed::algorithms
+
 
 #endif//HPXDISTRIBUTED_ALGORITHM_H

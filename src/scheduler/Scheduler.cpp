@@ -18,5 +18,5 @@ namespace hpxdistributed::scheduler {
     }
     Scheduler::Scheduler(AlgorithmsDependencies algorithms_dependencies)
         : _algorithms_dependencies(std::move(algorithms_dependencies)),
-          _workers{hpx::new_<WorkerClient[]>(hpx::binpacked(hpx::find_all_localities()), hpx::get_num_localities().get(), 200, _algorithms_dependencies).get()} {}
+          _workers{hpx::new_<WorkerClient[]>(hpx::binpacked(hpx::find_all_localities()), hpx::get_num_localities().get(), _algorithms_dependencies).get()} {}
 }// namespace hpxdistributed::scheduler

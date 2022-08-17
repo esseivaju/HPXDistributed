@@ -17,14 +17,13 @@ namespace hpxdistributed {
             using algo_id_t = hpxdistributed::algorithms::Algorithm::id_t;
 
         private:
-            std::chrono::milliseconds::rep _process_time;
             std::unordered_map<algo_id_t, std::vector<algo_id_t>> _deps;
             // map of algorithm instances by name
             std::unordered_map<algo_id_t, std::unique_ptr<hpxdistributed::algorithms::Algorithm>> _algorithms;
 
         public:
             using AlgorithmsDependencies = decltype(_deps);
-            Worker(std::chrono::milliseconds::rep time, AlgorithmsDependencies deps);
+            explicit Worker(AlgorithmsDependencies deps);
 
             EventContext schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested);
 

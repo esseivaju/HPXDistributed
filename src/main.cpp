@@ -47,10 +47,10 @@ int main(int argc, char *argv[]) {
     //build dependencies graph
     std::unordered_map<std::string, Inputs> dependencies{
             {algo_a_name, {}},
-            {algo_b_name, std::vector{algo_a_name}},
-            {algo_c_name, std::vector{algo_a_name}},
-            {algo_d_name, std::vector{algo_b_name, algo_c_name}},
-            {algo_e_name, std::vector{algo_b_name}}};
+            {algo_b_name, {algo_a_name}},
+            {algo_c_name, {algo_a_name}},
+            {algo_d_name, {algo_b_name, algo_c_name}},
+            {algo_e_name, {algo_b_name}}};
     print_dependencies(dependencies);
 
     auto factor = std::stoul(argv[1]);

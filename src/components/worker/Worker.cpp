@@ -1,6 +1,8 @@
 #include "Worker.h"
 #include "AlgorithmsImpl.h"
 
+#include <hpx/iostream.hpp>
+
 #include <chrono>
 #include <sstream>
 #include <stdexcept>
@@ -16,15 +18,15 @@ namespace hpxdistributed {
         EventContext Worker::schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
             // TODO: From the requested algorithms and dependencies map, we need to compose the execution graph and run it.
             // TODO: This should only return when all the requested output have been computed.
-            std::this_thread::sleep_for(std::chrono::milliseconds{_process_time});
+
             eventContext.eta() *= 2;
             eventContext.phi() *= 2;
             return eventContext;
         }
-        Worker::Worker(std::chrono::milliseconds::rep time, Worker::AlgorithmsDependencies deps) : _process_time{time}, _deps{std::move(deps)}, _algorithms{} {
+        Worker::Worker(Worker::AlgorithmsDependencies deps) : _deps{std::move(deps)}, _algorithms{} {
             namespace algs = hpxdistributed::algorithms;
             using enum algs::Algorithm::StatusCode;
-            auto insert_algo{[&](std::unique_ptr<algs::Algorithm> alg) {
+            auto insert_algo{[&](std::unique_ptr<algs::Algorithm> &&alg) {
                 auto name{alg->get_name()};
                 _algorithms.insert({std::move(name), std::move(alg)});
             }};

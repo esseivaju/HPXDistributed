@@ -13,7 +13,6 @@ namespace hpxdistributed::algorithms {
     public:
         AlgorithmE();
         StatusCode initialize() override;
-        StatusCode operator()(EventContext &context) override;
     };
 
 }// namespace hpxdistributed::algorithms
