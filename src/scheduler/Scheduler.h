@@ -1,7 +1,7 @@
 #ifndef HPXDISTRIBUTED_SCHEDULER_H
 #define HPXDISTRIBUTED_SCHEDULER_H
 
-#include "Algorithm.h"
+#include "EventContext.h"
 #include "Worker.h"
 
 #include <hpx/runtime_distributed.hpp>
