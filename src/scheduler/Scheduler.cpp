@@ -8,9 +8,9 @@
 
 namespace hpxdistributed::scheduler {
 
-    hpx::shared_future<EventContext> Scheduler::schedule_event(const EventContext &ec) {
+    hpx::shared_future<EventContext<Scheduler::algo_id_t>> Scheduler::schedule_event(const EventContext<Scheduler::algo_id_t> &ec) {
         //TODO: get algorithms to run dynamically
-        auto result = _workers[_next_worker++ % _workers.size()].process_event(ec, {"AlgorithmD", "AlgorithmE"});
+        auto result = _workers[_next_worker++ % _workers.size()].process_event(ec);
         _futures.insert({ec.id(), std::move(result)});
         return _futures[ec.id()];
 

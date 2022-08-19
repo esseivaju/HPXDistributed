@@ -28,8 +28,7 @@ namespace hpxdistributed {
         public:
             using AlgorithmsDependencies = decltype(_deps);
             explicit Worker(AlgorithmsDependencies deps);
-
-            EventContext process_event(EventContext eventContext, const std::vector<algo_id_t> &requested);
+            EventContext<algo_id_t> process_event(EventContext<algo_id_t> eventContext);
 
             HPX_DEFINE_COMPONENT_ACTION(Worker, process_event);
         };
@@ -48,7 +47,7 @@ namespace hpxdistributed {
         explicit Worker(hpx::id_type &&f)
             : base_type(std::move(f)) {}
 
-        hpx::shared_future<EventContext> process_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested);
+        hpx::shared_future<EventContext<algo_id_t>> process_event(const EventContext<algo_id_t> &eventContext);
     };
 }// namespace hpxdistributed
 

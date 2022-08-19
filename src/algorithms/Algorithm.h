@@ -33,7 +33,7 @@ namespace hpxdistributed::algorithms {
             UNKNOWN = 2
         };
         [[nodiscard]] virtual StatusCode initialize() = 0;
-        [[nodiscard]] virtual StatusCode operator()(EventContext &);
+        [[nodiscard]] virtual StatusCode operator()(EventContext<id_t> &);
         [[nodiscard]] const decltype(_name) &get_name() const { return _name; }
     };
 }// namespace hpxdistributed::algorithms

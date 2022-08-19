@@ -19,7 +19,8 @@ namespace hpxdistributed::algorithms {
 
         return sum;
     }
-    Algorithm::StatusCode Algorithm::operator()(EventContext &ec) {
+
+    Algorithm::StatusCode Algorithm::operator()(EventContext<id_t> &ec) {
         volatile double test_result = 0.0;
 
         double ms_interval = _distribution(_random);

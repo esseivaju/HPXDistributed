@@ -33,7 +33,7 @@ void print_dependencies(const std::unordered_map<std::string, Inputs> &dependenc
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc < 2) {
         hpx::cout << "Usage: " << argv[0] << " <factor number of events>" << std::endl;
         return 1;
     }
@@ -62,11 +62,11 @@ int main(int argc, char *argv[]) {
 
     using Scheduler = hpxdistributed::scheduler::Scheduler;
     Scheduler sched{std::move(dependencies)};
-    std::vector<hpx::shared_future<EventContext>> futures;
+    std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
     auto start{std::chrono::high_resolution_clock::now()};
     for (std::weakly_incrementable auto elem: std::views::iota(0ul, n_events)) {
-        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem)}));
+        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmD", "AlgorithmE"}}));
     }
     auto end_scheduling{std::chrono::high_resolution_clock::now()};
     hpx::wait_all(futures);
