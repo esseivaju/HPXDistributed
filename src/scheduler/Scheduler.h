@@ -13,10 +13,10 @@ namespace hpxdistributed::scheduler {
 
     class Scheduler {
     private:
-        using WorkerClient = hpxdistributed::WorkerClient;
-        using AlgorithmsDependencies = WorkerClient::AlgorithmsDependencies;
+        using Worker = hpxdistributed::Worker;
+        using AlgorithmsDependencies = Worker::AlgorithmsDependencies;
         AlgorithmsDependencies _algorithms_dependencies;
-        std::vector<WorkerClient> _workers;
+        std::vector<Worker> _workers;
         std::unordered_map<EventContext::IDType, hpx::shared_future<EventContext>> _futures;
         decltype(_workers)::size_type _next_worker{0};
 

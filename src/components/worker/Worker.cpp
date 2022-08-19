@@ -15,7 +15,7 @@ HPX_REGISTER_ACTION(WorkerServer::schedule_event_action, worker_schedule_event_a
 
 namespace hpxdistributed {
 
-    namespace components::details {
+    namespace components::server {
 
         // y_combinator to recursively call lambda without having to pass it as a parameter every time.
         template <class F> 
@@ -99,9 +99,9 @@ namespace hpxdistributed {
                 }
             }
         }
-    }// namespace components::details
+    }// namespace components::server
 
-    hpx::shared_future<EventContext> WorkerClient::schedule_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested) {
+    hpx::shared_future<EventContext> Worker::schedule_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested) {
         WorkerServer::schedule_event_action act;
         return hpx::async(act, get_id(), eventContext, requested);
     }
