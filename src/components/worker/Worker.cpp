@@ -33,7 +33,7 @@ namespace hpxdistributed {
 
         EventContext Worker::process_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
             std::unordered_map<algo_id_t, hpx::shared_future<StatusCode>> scheduled;
-            auto schedule_inputs = fix{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<StatusCode> {
+            auto schedule_inputs = fix{[&](auto& self, const algo_id_t& algo_id) -> hpx::shared_future<StatusCode> {
                 auto deps = _deps.find(algo_id);
                 assert(deps != _deps.end() && "Dependency map should have an entry for each algorithm");
                 // if we have dependencies, schedule them first
