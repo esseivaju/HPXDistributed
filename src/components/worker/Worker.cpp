@@ -32,8 +32,6 @@ namespace hpxdistributed {
         };
 
         EventContext Worker::process_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
-            // TODO: From the requested algorithms and dependencies map, we need to compose the execution graph and run it.
-            // TODO: This should only return when all the requested output have been computed.
             std::unordered_map<algo_id_t, hpx::shared_future<StatusCode>> scheduled;
             auto schedule_inputs = fix{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<StatusCode> {
                 auto deps = _deps.find(algo_id);
