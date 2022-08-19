@@ -8,6 +8,8 @@
 #include <cassert>
 #include <stdexcept>
 #include <thread>
+#include <concepts>
+#include <type_traits>
 
 HPX_REGISTER_COMPONENT_MODULE()
 
@@ -18,14 +20,14 @@ namespace hpxdistributed {
     namespace components::server {
 
         // y_combinator to recursively call lambda without having to pass it as a parameter every time.
-        template <class F> 
+        template <class F>
         class fix {
             F func;
 
             public:
             fix(F&& f) : func(std::forward<F>(f)) {}
 
-            template <class... Args>
+            template <class... Args> requires std::invocable<F, std::add_lvalue_reference_t<fix<F>>, Args...>
             auto operator()(Args&&... args) {
                 return func(*this, std::forward<Args>(args)...);
             }
