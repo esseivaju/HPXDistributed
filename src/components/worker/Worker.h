@@ -5,6 +5,9 @@
 #include "EventContext.h"
 #include <chrono>
 #include <hpx/future.hpp>
+#include <hpx/config.hpp>
+#include <hpx/hpx.hpp>
+#include <hpx/include/actions.hpp>
 #include <hpx/include/components.hpp>
 #include <iostream>
 #include <memory>
@@ -27,7 +30,7 @@ namespace hpxdistributed {
 
             EventContext schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested);
 
-            HPX_DEFINE_COMPONENT_ACTION(Worker, schedule_event, schedule_event_action);
+            HPX_DEFINE_COMPONENT_ACTION(Worker, schedule_event);
         };
     }// namespace components::details
 

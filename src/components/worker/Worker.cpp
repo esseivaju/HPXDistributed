@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <sstream>
+#include <cassert>
 #include <stdexcept>
 #include <thread>
 
@@ -15,12 +16,65 @@ HPX_REGISTER_ACTION(WorkerServer::schedule_event_action, worker_schedule_event_a
 namespace hpxdistributed {
 
     namespace components::details {
+
+        // y_combinator to recursively call lambda without having to pass it as a parameter every time.
+        template <class F> 
+        class y_combinator {
+            F func;
+
+            public:
+            y_combinator(F&& f) : func(std::forward<F>(f)) {}
+
+            template <class... Args>
+            auto operator()(Args&&... args) {
+                return func(*this, std::forward<Args>(args)...);
+            }
+        };
+
         EventContext Worker::schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
             // TODO: From the requested algorithms and dependencies map, we need to compose the execution graph and run it.
             // TODO: This should only return when all the requested output have been computed.
+            std::unordered_map<algo_id_t, hpx::shared_future<void>> scheduled;
+            auto schedule_inputs = y_combinator{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<void> {
+                auto deps = _deps.find(algo_id);
+                assert(deps != _deps.end() && "Dependency map should have an entry for each algorithm");
+                // if we have dependencies, schedule them first
+                if (deps->second.size() > 0) {
+                    std::vector<hpx::shared_future<void>> inputs{};
+                    inputs.reserve(deps->second.size());
+                    // for each dependency, we check if it has already been scheduled
+                    for (auto& dep : deps->second) {
+                        auto is_dep_scheduled = scheduled.find(dep);
+                        if (is_dep_scheduled == scheduled.end()) {
+                            // hasn't been scheduled, schedule it and register the future in case other algorithms depend on it
+                            scheduled[dep] = self(dep);
+                            inputs.push_back(scheduled[dep]);
+                        } else {
+                            //already scheduled, retrieve the future to wait on it
+                            inputs.push_back(is_dep_scheduled->second);
+                        }
+                    }
+                    // returns a future which will only schedule execution of the current algorithm when all the dependencies are ready
+                    return hpx::when_all(inputs).then([&](const auto &container){
+                        // wrap the algorithm call in a lambda, hpx seems to not be supporting function objects.
+                        return hpx::async([&]() { (*_algorithms[algo_id])(eventContext);});
+                    });
+                }
+                // we don't have any dependencies, so we can schedule the algorithm and return a future to wait on its execution
+                return hpx::async([&]() { (*_algorithms[algo_id])(eventContext);});
 
-            eventContext.eta() *= 2;
-            eventContext.phi() *= 2;
+            }};
+
+            // schedule all the algorithms that are requested and wait on them
+            std::vector<hpx::shared_future<void>> to_run{};
+            to_run.reserve(requested.size());
+            for(const auto& algo_id : requested) {
+                if(scheduled.find(algo_id) == scheduled.end()) {
+                    scheduled[algo_id] = schedule_inputs(algo_id);
+                }
+                to_run.push_back(scheduled[algo_id]);
+            }
+            hpx::wait_all(to_run);
             return eventContext;
         }
         Worker::Worker(Worker::AlgorithmsDependencies deps) : _deps{std::move(deps)}, _algorithms{} {
@@ -30,6 +84,8 @@ namespace hpxdistributed {
                 auto name{alg->get_name()};
                 _algorithms.insert({std::move(name), std::move(alg)});
             }};
+            // We're using subclasses of Algorithm even though none of them currently overload operator()
+            // they eventually should do different things.
             insert_algo(std::make_unique<algs::AlgorithmA>());
             insert_algo(std::make_unique<algs::AlgorithmB>());
             insert_algo(std::make_unique<algs::AlgorithmC>());
