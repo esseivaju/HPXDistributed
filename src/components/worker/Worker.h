@@ -18,6 +18,7 @@ namespace hpxdistributed {
         class Worker : public hpx::components::component_base<Worker> {
         public:
             using algo_id_t = hpxdistributed::algorithms::Algorithm::id_t;
+            using StatusCode = hpxdistributed::algorithms::Algorithm::StatusCode;
 
         private:
             std::unordered_map<algo_id_t, std::vector<algo_id_t>> _deps;

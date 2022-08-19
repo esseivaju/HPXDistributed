@@ -34,13 +34,13 @@ namespace hpxdistributed {
         EventContext Worker::schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
             // TODO: From the requested algorithms and dependencies map, we need to compose the execution graph and run it.
             // TODO: This should only return when all the requested output have been computed.
-            std::unordered_map<algo_id_t, hpx::shared_future<void>> scheduled;
-            auto schedule_inputs = y_combinator{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<void> {
+            std::unordered_map<algo_id_t, hpx::shared_future<StatusCode>> scheduled;
+            auto schedule_inputs = y_combinator{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<StatusCode> {
                 auto deps = _deps.find(algo_id);
                 assert(deps != _deps.end() && "Dependency map should have an entry for each algorithm");
                 // if we have dependencies, schedule them first
                 if (deps->second.size() > 0) {
-                    std::vector<hpx::shared_future<void>> inputs{};
+                    std::vector<hpx::shared_future<StatusCode>> inputs{};
                     inputs.reserve(deps->second.size());
                     // for each dependency, we check if it has already been scheduled
                     for (auto& dep : deps->second) {
@@ -55,18 +55,25 @@ namespace hpxdistributed {
                         }
                     }
                     // returns a future which will only schedule execution of the current algorithm when all the dependencies are ready
-                    return hpx::when_all(inputs).then([&](const auto &container){
+                    return hpx::when_all(inputs).then(hpx::unwrapping([&](const auto &container){
+                        // If any of our input failed, do not execute and propagate the failure
+                        for(auto status_code_future : container) {
+                            auto status_code = status_code_future.get();
+                            if (status_code != StatusCode::SUCCESS) {
+                                return hpx::make_ready_future(status_code);
+                            }
+                        }
                         // wrap the algorithm call in a lambda, hpx seems to not be supporting function objects.
-                        return hpx::async([&]() { (*_algorithms[algo_id])(eventContext);});
-                    });
+                        return hpx::async([&]() { return (*_algorithms[algo_id])(eventContext);});
+                    }));
                 }
                 // we don't have any dependencies, so we can schedule the algorithm and return a future to wait on its execution
-                return hpx::async([&]() { (*_algorithms[algo_id])(eventContext);});
+                return hpx::async([&]() { return (*_algorithms[algo_id])(eventContext);});
 
             }};
 
             // schedule all the algorithms that are requested and wait on them
-            std::vector<hpx::shared_future<void>> to_run{};
+            std::vector<hpx::shared_future<StatusCode>> to_run{};
             to_run.reserve(requested.size());
             for(const auto& algo_id : requested) {
                 if(scheduled.find(algo_id) == scheduled.end()) {
