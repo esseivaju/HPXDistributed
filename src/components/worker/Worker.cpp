@@ -11,7 +11,7 @@
 
 HPX_REGISTER_COMPONENT_MODULE()
 
-HPX_REGISTER_ACTION(WorkerServer::schedule_event_action, worker_schedule_event_action);
+HPX_REGISTER_ACTION(WorkerServer::process_event_action, worker_process_event_action);
 
 namespace hpxdistributed {
 
@@ -19,11 +19,11 @@ namespace hpxdistributed {
 
         // y_combinator to recursively call lambda without having to pass it as a parameter every time.
         template <class F> 
-        class y_combinator {
+        class fix {
             F func;
 
             public:
-            y_combinator(F&& f) : func(std::forward<F>(f)) {}
+            fix(F&& f) : func(std::forward<F>(f)) {}
 
             template <class... Args>
             auto operator()(Args&&... args) {
@@ -31,11 +31,11 @@ namespace hpxdistributed {
             }
         };
 
-        EventContext Worker::schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
+        EventContext Worker::process_event(EventContext eventContext, const std::vector<algo_id_t> &requested) {
             // TODO: From the requested algorithms and dependencies map, we need to compose the execution graph and run it.
             // TODO: This should only return when all the requested output have been computed.
             std::unordered_map<algo_id_t, hpx::shared_future<StatusCode>> scheduled;
-            auto schedule_inputs = y_combinator{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<StatusCode> {
+            auto schedule_inputs = fix{[&](auto self, const algo_id_t& algo_id) -> hpx::shared_future<StatusCode> {
                 auto deps = _deps.find(algo_id);
                 assert(deps != _deps.end() && "Dependency map should have an entry for each algorithm");
                 // if we have dependencies, schedule them first
@@ -108,8 +108,7 @@ namespace hpxdistributed {
         }
     }// namespace components::server
 
-    hpx::shared_future<EventContext> Worker::schedule_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested) {
-        WorkerServer::schedule_event_action act;
-        return hpx::async(act, get_id(), eventContext, requested);
+    hpx::shared_future<EventContext> Worker::process_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested) {
+        return hpx::async<WorkerServer::process_event_action>(get_id(), eventContext, requested);
     }
 }// namespace hpxdistributed

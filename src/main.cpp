@@ -66,8 +66,7 @@ int main(int argc, char *argv[]) {
     futures.reserve(n_events);
     auto start{std::chrono::high_resolution_clock::now()};
     for (std::weakly_incrementable auto elem: std::views::iota(0ul, n_events)) {
-        sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem)});
-        futures.emplace_back(sched.retrieve(elem));
+        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem)}));
     }
     auto end_scheduling{std::chrono::high_resolution_clock::now()};
     hpx::wait_all(futures);

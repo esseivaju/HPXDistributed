@@ -29,9 +29,9 @@ namespace hpxdistributed {
             using AlgorithmsDependencies = decltype(_deps);
             explicit Worker(AlgorithmsDependencies deps);
 
-            EventContext schedule_event(EventContext eventContext, const std::vector<algo_id_t> &requested);
+            EventContext process_event(EventContext eventContext, const std::vector<algo_id_t> &requested);
 
-            HPX_DEFINE_COMPONENT_ACTION(Worker, schedule_event);
+            HPX_DEFINE_COMPONENT_ACTION(Worker, process_event);
         };
     }// namespace components::server
 
@@ -48,12 +48,12 @@ namespace hpxdistributed {
         explicit Worker(hpx::id_type &&f)
             : base_type(std::move(f)) {}
 
-        hpx::shared_future<EventContext> schedule_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested);
+        hpx::shared_future<EventContext> process_event(const EventContext &eventContext, const std::vector<algo_id_t> &requested);
     };
 }// namespace hpxdistributed
 
-HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::server::Worker::schedule_event_action,
-                                worker_schedule_event_action);
+HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::server::Worker::process_event_action,
+                                worker_process_event_action);
 
 using WorkerServer = hpxdistributed::components::server::Worker;
 HPX_REGISTER_COMPONENT(hpx::components::component<WorkerServer>, WorkerComponent);

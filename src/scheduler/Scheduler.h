@@ -3,7 +3,8 @@
 
 #include "Algorithm.h"
 #include "Worker.h"
-#include <hpx/iostream.hpp>
+
+#include <hpx/runtime_distributed.hpp>
 
 #include <optional>
 #include <unordered_map>
@@ -22,8 +23,7 @@ namespace hpxdistributed::scheduler {
 
     public:
         explicit Scheduler(AlgorithmsDependencies algorithms_dependencies);
-        void schedule_event(const EventContext &event_context);
-        hpx::shared_future<EventContext> &retrieve(const EventContext::IDType &id);
+        hpx::shared_future<EventContext> schedule_event(const EventContext &event_context);
     };
 }// namespace hpxdistributed::scheduler
 
