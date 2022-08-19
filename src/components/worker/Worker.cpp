@@ -28,7 +28,7 @@ namespace hpxdistributed {
             fix(F&& f) : func(std::forward<F>(f)) {}
 
             template <class... Args> requires std::invocable<F, std::add_lvalue_reference_t<fix<F>>, Args...>
-            auto operator()(Args&&... args) {
+            decltype(auto) operator()(Args&&... args) {
                 return func(*this, std::forward<Args>(args)...);
             }
         };
