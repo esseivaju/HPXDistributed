@@ -9,6 +9,6 @@ namespace hpxdistributed::algorithms {
     Algorithm::StatusCode AlgorithmB::initialize() {
         return SUCCESS;
     }
-    AlgorithmB::AlgorithmB() : Algorithm(40, 5, "AlgorithmB") {}
+    AlgorithmB::AlgorithmB() : Algorithm(400, 5, "AlgorithmB") {}
 
 }// namespace hpxdistributed::algorithms
