@@ -34,7 +34,7 @@ void print_dependencies(const std::unordered_map<std::string, Inputs> &dependenc
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        hpx::cout << "Usage: " << argv[0] << " <factor number of events>" << std::endl;
+        hpx::cout << "Usage: " << argv[0] << " <# events>" << std::endl;
         return 1;
     }
     // Build a static, arbitrary dependencies graph.
@@ -53,10 +53,9 @@ int main(int argc, char *argv[]) {
             {algo_e_name, {algo_b_name}}};
     print_dependencies(dependencies);
 
-    auto factor = std::stoul(argv[1]);
+    auto n_events = std::stoul(argv[1]);
     auto n_localities = hpx::get_num_localities().get();
     auto n_threads = hpx::get_os_thread_count();
-    auto n_events = n_threads * n_localities * factor;
     hpx::cout << "Running with " << n_localities << " localities with " << n_threads << " threads each (" << n_localities * n_threads << " cores)" << std::endl;
     hpx::cout << "Processing " << n_events << " events" << std::endl;
 
