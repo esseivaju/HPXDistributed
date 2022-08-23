@@ -27,9 +27,9 @@ namespace hpxdistributed::algorithms {
 
         std::chrono::duration<float, std::milli> chrono_interval(ms_interval);
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
-        while (std::chrono::system_clock::now() - start < chrono_interval)
+        while (std::chrono::high_resolution_clock::now() - start < chrono_interval)
             test_result += burn(5000);
         return StatusCode::SUCCESS;
     }
