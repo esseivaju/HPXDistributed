@@ -14,7 +14,8 @@ namespace hpxdistributed::scheduler {
 
     class Scheduler {
     public:
-        using algo_id_t =hpxdistributed::Worker::algo_id_t;
+        using algo_id_t = hpxdistributed::Worker::algo_id_t;
+
     private:
         using Worker = hpxdistributed::Worker;
         using AlgorithmsDependencies = Worker::AlgorithmsDependencies;

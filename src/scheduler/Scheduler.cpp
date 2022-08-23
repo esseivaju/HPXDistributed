@@ -13,7 +13,6 @@ namespace hpxdistributed::scheduler {
         auto result = _workers[_next_worker++ % _workers.size()].process_event(ec);
         _futures.insert({ec.id(), std::move(result)});
         return _futures[ec.id()];
-
     }
     Scheduler::Scheduler(AlgorithmsDependencies algorithms_dependencies)
         : _algorithms_dependencies(std::move(algorithms_dependencies)),

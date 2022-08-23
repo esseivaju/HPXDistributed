@@ -7,10 +7,10 @@
 
 #include <hpx/modules/serialization.hpp>
 #include <iostream>
-#include <vector>
 #include <utility>
+#include <vector>
 
-template <class ID>
+template<class ID>
 class EventContext {
 
 public:
@@ -31,7 +31,7 @@ public:
     [[nodiscard]] double &phi() { return _phi; };
     [[nodiscard]] IDType id() const { return _id; };
     [[nodiscard]] IDType &id() { return _id; };
-    [[nodiscard]] const std::vector<ID>& requested() const { return _requested; };
+    [[nodiscard]] const std::vector<ID> &requested() const { return _requested; };
 
 private:
     friend class hpx::serialization::access;

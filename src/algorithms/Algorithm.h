@@ -6,21 +6,22 @@
 #define HPXDISTRIBUTED_ALGORITHM_H
 
 #include "EventContext.h"
-#include <string>
-#include <utility>
-#include <typeindex>
-#include <random>
 #include <cmath>
+#include <random>
+#include <string>
+#include <typeindex>
+#include <utility>
 
 namespace hpxdistributed::algorithms {
     class Algorithm {
     protected:
-        double _meanCpuTime {100.};
-        double _rmsCpuTime {5.};
+        double _meanCpuTime{100.};
+        double _rmsCpuTime{5.};
         std::default_random_engine _random;
         std::normal_distribution<double> _distribution;
         std::string _name;
         [[nodiscard]] double burn(unsigned long) const;
+
     public:
         virtual ~Algorithm() = default;
         explicit Algorithm(decltype(_name));

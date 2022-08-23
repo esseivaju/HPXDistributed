@@ -4,8 +4,8 @@
 #include "Algorithm.h"
 #include "EventContext.h"
 #include <chrono>
-#include <hpx/future.hpp>
 #include <hpx/config.hpp>
+#include <hpx/future.hpp>
 #include <hpx/hpx.hpp>
 #include <hpx/include/actions.hpp>
 #include <hpx/include/components.hpp>
