@@ -28,7 +28,7 @@ namespace hpxdistributed {
         public:
             using AlgorithmsDependencies = decltype(_deps);
             explicit Worker(AlgorithmsDependencies deps);
-            EventContext<algo_id_t> process_event(EventContext<algo_id_t> eventContext);
+            EventContext<algo_id_t> process_event(EventContext<algo_id_t> eventContext, std::vector<std::string>);
 
             HPX_DEFINE_COMPONENT_ACTION(Worker, process_event);
         };

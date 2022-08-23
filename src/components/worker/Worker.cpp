@@ -34,7 +34,8 @@ namespace hpxdistributed {
             }
         };
 
-        EventContext<Worker::algo_id_t> Worker::process_event(EventContext<algo_id_t> eventContext) {
+        EventContext<Worker::algo_id_t> Worker::process_event(EventContext<algo_id_t> eventContext, std::vector<std::string> values) {
+            assert(values.size() > 0);
             std::unordered_map<algo_id_t, hpx::shared_future<StatusCode>> scheduled;
             auto schedule_inputs = fix{[&](auto &self, const algo_id_t &algo_id) -> hpx::shared_future<StatusCode> {
                 auto deps = _deps.find(algo_id);
@@ -109,6 +110,7 @@ namespace hpxdistributed {
     }// namespace components::server
 
     hpx::shared_future<EventContext<Worker::algo_id_t>> Worker::process_event(const EventContext<algo_id_t> &eventContext) {
-        return hpx::async<WorkerServer::process_event_action>(get_id(), eventContext);
+        std::vector<std::string> v{"foo", "bar"};
+        return hpx::async<WorkerServer::process_event_action>(get_id(), eventContext, std::move(v));
     }
 }// namespace hpxdistributed
