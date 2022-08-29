@@ -54,7 +54,4 @@ namespace hpxdistributed {
 HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::server::Worker::process_event_action,
                                 worker_process_event_action);
 
-using WorkerServer = hpxdistributed::components::server::Worker;
-HPX_REGISTER_COMPONENT(hpx::components::component<WorkerServer>, WorkerComponent);
-
 #endif//HPXDISTRIBUTED_WORKER_H

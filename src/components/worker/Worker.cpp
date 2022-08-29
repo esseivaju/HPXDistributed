@@ -13,6 +13,9 @@
 
 HPX_REGISTER_COMPONENT_MODULE()
 
+using WorkerServer = hpxdistributed::components::server::Worker;
+HPX_REGISTER_COMPONENT(hpx::components::component<WorkerServer>, WorkerComponent);
+
 HPX_REGISTER_ACTION(WorkerServer::process_event_action, worker_process_event_action);
 
 namespace hpxdistributed {

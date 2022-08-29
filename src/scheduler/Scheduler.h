@@ -20,9 +20,15 @@ namespace hpxdistributed::scheduler {
         using Worker = hpxdistributed::Worker;
         using AlgorithmsDependencies = Worker::AlgorithmsDependencies;
         AlgorithmsDependencies _algorithms_dependencies;
+#ifdef SINGLE_WORKER
+        Worker _worker;
+#else
         std::vector<Worker> _workers;
+#endif
         std::unordered_map<typename EventContext<algo_id_t>::IDType, hpx::shared_future<EventContext<algo_id_t>>> _futures;
+#ifndef SINGLE_WORKER
         decltype(_workers)::size_type _next_worker{0};
+#endif
 
     public:
         explicit Scheduler(AlgorithmsDependencies algorithms_dependencies);
