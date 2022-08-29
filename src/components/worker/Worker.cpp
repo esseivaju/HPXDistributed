@@ -2,6 +2,7 @@
 #include "AlgorithmsImpl.h"
 
 #include <hpx/iostream.hpp>
+#include <hpx/serialization.hpp>
 
 #include <cassert>
 #include <chrono>
