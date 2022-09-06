@@ -3,6 +3,7 @@
 #include "EventContext.h"
 #include "Scheduler.h"
 
+#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <optional>
@@ -63,8 +64,17 @@ int main(int argc, char *argv[]) {
     Scheduler sched{std::move(dependencies)};
     std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
+    // do a few warm-up events before starting measuring timing
+    for (auto elem: std::views::iota(0ul, 2 * n_localities)) {
+        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmD", "AlgorithmE"}}));
+    }
+
+    hpx::wait_all(futures);
+    futures.clear();
+    assert(futures.capacity() == n_events);
+
     auto start{std::chrono::steady_clock::now()};
-    for (std::weakly_incrementable auto elem: std::views::iota(0ul, n_events)) {
+    for (auto elem: std::views::iota(0ul, n_events)) {
         futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmD", "AlgorithmE"}}));
     }
     auto end_scheduling{std::chrono::steady_clock::now()};
@@ -77,7 +87,7 @@ int main(int argc, char *argv[]) {
     hpx::cout << "Total time to schedule: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_scheduling - start).count() << "ms" << std::endl;
     hpx::cout << "Total time to process: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - start).count() << "ms" << std::endl;
     hpx::cout << "Time between scheduling end and processing end: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - end_scheduling).count() << "ms" << std::endl;
-    hpx::cout << "Average time per event: " << std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_work - start).count() / static_cast<double>(n_events) << "ms" << std::endl;
+    hpx::cout << "Throughput: " << static_cast<double>(n_events) / std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_work - start).count() << " events/ms" << std::endl;
 
     return 0;
 }
