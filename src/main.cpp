@@ -63,13 +63,13 @@ int main(int argc, char *argv[]) {
     Scheduler sched{std::move(dependencies)};
     std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
-    auto start{std::chrono::high_resolution_clock::now()};
+    auto start{std::chrono::steady_clock::now()};
     for (std::weakly_incrementable auto elem: std::views::iota(0ul, n_events)) {
         futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmD", "AlgorithmE"}}));
     }
-    auto end_scheduling{std::chrono::high_resolution_clock::now()};
+    auto end_scheduling{std::chrono::steady_clock::now()};
     hpx::wait_all(futures);
-    auto end_work{std::chrono::high_resolution_clock::now()};
+    auto end_work{std::chrono::steady_clock::now()};
     //        hpx::cout << "Result: " << std::endl;
     //        for (auto &f: futures) {
     //            hpx::cout << f.get() << std::endl;
