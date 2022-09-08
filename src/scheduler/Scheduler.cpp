@@ -4,6 +4,7 @@
 #include <hpx/modules/distribution_policies.hpp>
 #include <hpx/runtime_distributed.hpp>
 
+#include <algorithm>
 #include <utility>
 
 namespace hpxdistributed::scheduler {
@@ -16,5 +17,5 @@ namespace hpxdistributed::scheduler {
     }
     Scheduler::Scheduler(AlgorithmsDependencies algorithms_dependencies)
         : _algorithms_dependencies(std::move(algorithms_dependencies)),
-          _workers{hpx::new_<Worker[]>(hpx::binpacked(hpx::find_all_localities()), hpx::get_num_localities().get(), _algorithms_dependencies).get()} {}
+          _workers{hpx::new_<Worker[]>(hpx::binpacked(hpx::find_remote_localities()), std::max(hpx::get_num_localities().get() - 1, 1u), _algorithms_dependencies).get()} {}
 }// namespace hpxdistributed::scheduler

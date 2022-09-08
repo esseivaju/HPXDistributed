@@ -47,7 +47,11 @@ int main(int argc, char *argv[]) {
     print_dependencies(dependencies);
 
     auto n_events = std::stoul(argv[1]);
-    auto n_localities = hpx::get_num_localities().get();
+    auto n_localities = hpx::get_num_localities().get() - 1;
+    if (n_localities == 0) {
+        hpx::cout << "No locality to run workers on, stopping..." << std::endl;
+        return 0;
+    }
     auto n_threads = hpx::get_os_thread_count();
     hpx::cout << "Running with " << n_localities << " localities with " << n_threads << " threads each (" << n_localities * n_threads << " cores)" << std::endl;
     hpx::cout << "Processing " << n_events << " events" << std::endl;
