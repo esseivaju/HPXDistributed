@@ -35,8 +35,13 @@ void print_dependencies(const std::unordered_map<std::string, Inputs> &dependenc
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        hpx::cout << "Usage: " << argv[0] << " <# events>" << std::endl;
+        hpx::cout << "Usage: " << argv[0] << " <# events> [throttle]" << std::endl;
         return 1;
+    }
+    bool throttle = false;
+    if (argc > 2  && !strcmp(argv[2], "throttle")) {
+        throttle = true;
+        hpx::cout << "Will throttle event scheduling to remote nodes" << std::endl;
     }
     // Build a static, arbitrary dependencies graph.
     // Get each algorithm name
@@ -57,7 +62,7 @@ int main(int argc, char *argv[]) {
     hpx::cout << "Processing " << n_events << " events" << std::endl;
 
     using Scheduler = hpxdistributed::scheduler::Scheduler;
-    Scheduler sched{std::move(dependencies)};
+    Scheduler sched{std::move(dependencies), throttle};
     std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
     // do a few warm-up events before starting measuring timing
