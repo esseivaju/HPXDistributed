@@ -14,6 +14,7 @@
 HPX_REGISTER_COMPONENT_MODULE()
 
 HPX_REGISTER_ACTION(WorkerServer::process_event_action, worker_process_event_action);
+HPX_REGISTER_ACTION(WorkerServer::loc_name_action, worker_loc_name_action);
 
 namespace hpxdistributed {
 
@@ -105,10 +106,19 @@ namespace hpxdistributed {
                     throw std::runtime_error(ss.str());
                 }
             }
+            //hpx::cout << "Worker " << _name << " initialized" << std::endl;
+        }
+
+        std::string Worker::loc_name() {
+            return hpx::get_locality_name(hpx::find_here()).get();
         }
     }// namespace components::server
 
     hpx::shared_future<EventContext<Worker::algo_id_t>> Worker::process_event(const EventContext<algo_id_t> &eventContext) {
         return hpx::async<WorkerServer::process_event_action>(get_id(), eventContext);
+    }
+
+    hpx::shared_future<std::string> Worker::loc_name() {
+        return hpx::async<WorkerServer::loc_name_action>(get_id());
     }
 }// namespace hpxdistributed

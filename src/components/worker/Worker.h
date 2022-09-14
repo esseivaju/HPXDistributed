@@ -31,6 +31,10 @@ namespace hpxdistributed {
             EventContext<algo_id_t> process_event(EventContext<algo_id_t> eventContext);
 
             HPX_DEFINE_COMPONENT_ACTION(Worker, process_event);
+
+            std::string loc_name();
+            HPX_DEFINE_COMPONENT_ACTION(Worker, loc_name);
+
         };
     }// namespace components::server
 
@@ -48,11 +52,14 @@ namespace hpxdistributed {
             : base_type(std::move(f)) {}
 
         hpx::shared_future<EventContext<algo_id_t>> process_event(const EventContext<algo_id_t> &eventContext);
+        hpx::shared_future<std::string> loc_name();
     };
 }// namespace hpxdistributed
 
 HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::server::Worker::process_event_action,
                                 worker_process_event_action);
+HPX_REGISTER_ACTION_DECLARATION(hpxdistributed::components::server::Worker::loc_name_action,
+                                worker_loc_name_action);
 
 using WorkerServer = hpxdistributed::components::server::Worker;
 HPX_REGISTER_COMPONENT(hpx::components::component<WorkerServer>, WorkerComponent);
