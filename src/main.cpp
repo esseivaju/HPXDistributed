@@ -46,9 +46,17 @@ int main(int argc, char *argv[]) {
     // Build a static, arbitrary dependencies graph.
     // Get each algorithm name
     auto algo_a_name{algs::AlgorithmA{}.get_name()};
+    auto algo_b_name{algs::AlgorithmB{}.get_name()};
+    auto algo_c_name{algs::AlgorithmC{}.get_name()};
+    auto algo_d_name{algs::AlgorithmD{}.get_name()};
+    auto algo_e_name{algs::AlgorithmE{}.get_name()};
     //build dependencies graph
     std::unordered_map<std::string, Inputs> dependencies{
-            {algo_a_name, {}}};
+            {algo_a_name, {}},
+            {algo_b_name, {algo_a_name}},
+            {algo_c_name, {algo_a_name}},
+            {algo_d_name, {algo_b_name, algo_c_name}},
+            {algo_e_name, {algo_b_name}}};
     print_dependencies(dependencies);
 
     auto n_events = std::stoul(argv[1]);
