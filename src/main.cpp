@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     Scheduler sched{std::move(dependencies), throttle};
     std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
+    hpx::cout << "warm-up..." << std::endl;
     // do a few warm-up events before starting measuring timing
     for (auto elem: std::views::iota(0ul, 2 * n_localities)) {
         futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmA"}}));
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]) {
     hpx::wait_all(futures);
     futures.clear();
     assert(futures.capacity() == n_events);
-
+    hpx::cout << "Starting benchmark..." << std::endl;
     auto start{std::chrono::steady_clock::now()};
     for (auto elem: std::views::iota(0ul, n_events)) {
         futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmA"}}));
