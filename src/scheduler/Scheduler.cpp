@@ -3,6 +3,7 @@
 #include <hpx/include/components.hpp>
 #include <hpx/modules/distribution_policies.hpp>
 #include <hpx/runtime_distributed.hpp>
+#include <hpx/iostream.hpp>
 
 #include <algorithm>
 #include <utility>
@@ -28,5 +29,8 @@ namespace hpxdistributed::scheduler {
           _workers{hpx::new_<Worker[]>(hpx::binpacked(hpx::find_remote_localities()), std::max(hpx::get_num_localities().get() - 1, 1u), _algorithms_dependencies).get()},
           _throttle{throttle} {
             _max_inflight_events = _workers.size() * 10 * hpx::get_os_thread_count();
+
+            for(auto &worker : _workers)
+                hpx::cout << "Worker instantiated on " << worker.loc_name().get() << std::endl;
           }
 }// namespace hpxdistributed::scheduler
