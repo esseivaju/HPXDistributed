@@ -15,17 +15,14 @@
 namespace hpxdistributed::algorithms {
     class Algorithm {
     protected:
-        double _meanCpuTime{100.};
-        double _rmsCpuTime{5.};
-        std::default_random_engine _random;
-        std::normal_distribution<double> _distribution;
+        int _a{1};
+        int _b{1000000};
         std::string _name;
-        [[nodiscard]] double burn(unsigned long) const;
 
     public:
         virtual ~Algorithm() = default;
         explicit Algorithm(decltype(_name));
-        Algorithm(decltype(_meanCpuTime), decltype(_rmsCpuTime), decltype(_name));
+        Algorithm(decltype(_a), decltype(_b), decltype(_name));
         using id_t = std::string;
         using status_code = uint8_t;
         enum class StatusCode : status_code {

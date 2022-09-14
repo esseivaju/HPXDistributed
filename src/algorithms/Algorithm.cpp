@@ -1,36 +1,22 @@
+#include <algorithm>
 #include <chrono>
 #include <random>
 
 #include "Algorithm.h"
 namespace hpxdistributed::algorithms {
-    Algorithm::Algorithm(decltype(_name) name) : Algorithm(100., 5., std::move(name)) {
+    Algorithm::Algorithm(decltype(_name) name) : Algorithm(1, 1000000, std::move(name)) {
     }
-    Algorithm::Algorithm(decltype(_meanCpuTime) meanCpuTime, decltype(_rmsCpuTime) rmsCpuTime, decltype(_name) name) : _meanCpuTime{meanCpuTime}, _rmsCpuTime{rmsCpuTime}, _random{static_cast<uint32_t>(_meanCpuTime)}, _distribution{std::normal_distribution<double>{_meanCpuTime, _rmsCpuTime}}, _name(std::move(name)) {
-    }
-    double Algorithm::burn(unsigned long nIterations) const {
-        volatile double sum = 0.0;
-
-        double val;
-
-        for (auto idx = 0lu; idx < nIterations; ++idx) {
-            val = (double) (idx + 1) / nIterations * 0.7854;
-            sum += std::tan(std::log(val));
-        }
-
-        return sum;
+    Algorithm::Algorithm(decltype(_a) a, decltype(_b) b, decltype(_name) name) : _a{a}, _b{b}, _name(std::move(name)) {
     }
 
     Algorithm::StatusCode Algorithm::operator()(EventContext<id_t> &ec) {
-        volatile double test_result = 0.0;
-
-        double ms_interval = _distribution(_random);
-
-        std::chrono::duration<float, std::milli> chrono_interval(ms_interval);
-
-        auto start = std::chrono::high_resolution_clock::now();
-
-        while (std::chrono::high_resolution_clock::now() - start < chrono_interval)
-            test_result += burn(5000);
+        std::mt19937 _random{static_cast<std::size_t>(_a+_b)};
+        std::uniform_int_distribution<int> _distribution{_a, _b};
+        std::vector<int> work{};
+        work.reserve(_b);
+        for(auto i = 0 ; i < _b ; ++i)
+            work.push_back(_distribution(_random));
+        std::sort(work.begin(), work.end());
         return StatusCode::SUCCESS;
     }
 }// namespace hpxdistributed::algorithms
