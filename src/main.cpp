@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     hpx::cout << "warm-up..." << std::endl;
     // do a few warm-up events before starting measuring timing
     for (auto elem: std::views::iota(0ul, 2 * n_localities)) {
-        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmA"}}));
+        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmD", "AlgorithmE"}}));
     }
 
     hpx::wait_all(futures);
