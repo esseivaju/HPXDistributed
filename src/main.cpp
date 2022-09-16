@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
             {algo_b_name, {algo_a_name}},
             {algo_c_name, {algo_a_name}},
             {algo_d_name, {algo_b_name, algo_c_name}},
-            {algo_e_name, {algo_b_name}}};
+            {algo_e_name, {algo_b_name}}
+            };
     print_dependencies(dependencies);
 
     auto n_events = std::stoul(argv[1]);
@@ -71,12 +72,13 @@ int main(int argc, char *argv[]) {
 
     using Scheduler = hpxdistributed::scheduler::Scheduler;
     Scheduler sched{std::move(dependencies), throttle};
+    std::vector<Scheduler::algo_id_t> requested_deps{"AlgorithmD", "AlgorithmE"};
     std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
     hpx::cout << "warm-up..." << std::endl;
     // do a few warm-up events before starting measuring timing
     for (auto elem: std::views::iota(0ul, 2 * n_localities)) {
-        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmD", "AlgorithmE"}}));
+        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), requested_deps}));
     }
 
     hpx::wait_all(futures);
@@ -85,7 +87,7 @@ int main(int argc, char *argv[]) {
     hpx::cout << "Starting benchmark..." << std::endl;
     auto start{std::chrono::steady_clock::now()};
     for (auto elem: std::views::iota(0ul, n_events)) {
-        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), std::vector<Scheduler::algo_id_t>{"AlgorithmA"}}));
+        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), requested_deps}));
     }
     auto end_scheduling{std::chrono::steady_clock::now()};
     hpx::wait_all(futures);
