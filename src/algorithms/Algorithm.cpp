@@ -14,7 +14,7 @@ namespace hpxdistributed::algorithms {
 
         for (auto idx = 0lu; idx < nIterations; ++idx) {
             val = (double) (idx + 1) / nIterations * 0.7854;
-            sum += std::sqrt(std::tan(std::log(val)));
+            sum += std::tan(std::log(val));
         }
 
         return sum;
