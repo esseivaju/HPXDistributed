@@ -17,7 +17,8 @@ namespace hpxdistributed::scheduler {
             while(_inflight_events.front().is_ready())
                 _inflight_events.pop();
         }
-        auto result = _workers[_next_worker++ % _workers.size()].process_event(ec);
+        auto result = _workers[_next_worker++].process_event(ec);
+        _next_worker %= _workers.size();
         if(_throttle) {
             _inflight_events.push(result);
         }

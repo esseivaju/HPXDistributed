@@ -110,7 +110,7 @@ namespace hpxdistributed {
         }
 
         std::string Worker::loc_name() {
-            return hpx::get_locality_name(hpx::find_here()).get();
+            return hpx::get_locality_name(hpx::find_here()).get() + " with "  + std::to_string(hpx::get_os_thread_count()) + " threads";
         }
     }// namespace components::server
 
