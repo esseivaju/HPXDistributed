@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <atomic>
 
 namespace hpxdistributed::scheduler {
 
@@ -17,13 +18,14 @@ namespace hpxdistributed::scheduler {
             while(_inflight_events.front().is_ready())
                 _inflight_events.pop();
         }
-        auto result = _workers[_next_worker++].process_event(ec);
-        _next_worker %= _workers.size();
+        std::atomic_ref ref{_next_worker};
+        auto old{ref.fetch_add(1)};
+        old %= _workers.size();
+        auto result = _workers[old].process_event(ec);
         if(_throttle) {
             _inflight_events.push(result);
         }
-        _futures.insert({ec.id(), std::move(result)});
-        return _futures[ec.id()];
+        return result;
     }
     Scheduler::Scheduler(AlgorithmsDependencies algorithms_dependencies, bool throttle)
         : _algorithms_dependencies(std::move(algorithms_dependencies)),

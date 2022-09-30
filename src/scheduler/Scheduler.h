@@ -22,7 +22,6 @@ namespace hpxdistributed::scheduler {
         using AlgorithmsDependencies = Worker::AlgorithmsDependencies;
         AlgorithmsDependencies _algorithms_dependencies;
         std::vector<Worker> _workers;
-        std::unordered_map<typename EventContext<algo_id_t>::IDType, hpx::shared_future<EventContext<algo_id_t>>> _futures;
         std::size_t _max_inflight_events {0};
         bool _throttle {false};
         std::queue<hpx::shared_future<EventContext<algo_id_t>>> _inflight_events;

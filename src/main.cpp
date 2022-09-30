@@ -10,10 +10,12 @@
 #include <ranges>
 #include <string>
 #include <unordered_map>
+#include <mutex>
 
 #include <hpx/hpx.hpp>
 #include <hpx/iostream.hpp>
 #include <hpx/wrap_main.hpp>
+#include <hpx/algorithm.hpp>
 
 namespace algs = hpxdistributed::algorithms;
 using Inputs = std::vector<std::string>;
@@ -85,10 +87,17 @@ int main(int argc, char *argv[]) {
     futures.clear();
     assert(futures.capacity() >= n_events);
     hpx::cout << "Starting benchmark..." << std::endl;
+    auto iter {std::views::iota(0ul, n_events)};
     auto start{std::chrono::steady_clock::now()};
-    for (auto elem: std::views::iota(0ul, n_events)) {
-        futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), requested_deps}));
-    }
+    std::mutex m;
+    hpx::for_each(hpx::execution::par, std::ranges::cbegin(iter), std::ranges::cend(iter),
+        [&](const auto elem) {
+                auto future {sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), requested_deps})};
+                // all the work has already been scheduled, we just need to save the future to wait on it later on
+                // so the latency added by synchronization is mostly hidden
+                std::scoped_lock lock(m);
+                futures.push_back(std::move(future));
+    });
     auto end_scheduling{std::chrono::steady_clock::now()};
     assert(futures.size() == n_events);
     hpx::wait_all(futures);
