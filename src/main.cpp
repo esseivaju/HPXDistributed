@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 
     using Scheduler = hpxdistributed::scheduler::Scheduler;
     Scheduler sched{std::move(dependencies), throttle};
-    std::vector<Scheduler::algo_id_t> requested_deps{"AlgorithmD", "AlgorithmE"};
+    std::vector<Scheduler::algo_id_t> requested_deps{algo_d_name, algo_e_name};
     std::vector<hpx::shared_future<EventContext<Scheduler::algo_id_t>>> futures;
     futures.reserve(n_events);
     hpx::cout << "warm-up..." << std::endl;
@@ -83,19 +83,16 @@ int main(int argc, char *argv[]) {
 
     hpx::wait_all(futures);
     futures.clear();
-    assert(futures.capacity() == n_events);
+    assert(futures.capacity() >= n_events);
     hpx::cout << "Starting benchmark..." << std::endl;
     auto start{std::chrono::steady_clock::now()};
     for (auto elem: std::views::iota(0ul, n_events)) {
         futures.emplace_back(sched.schedule_event(EventContext{elem, static_cast<double>(elem), static_cast<double>(elem), requested_deps}));
     }
     auto end_scheduling{std::chrono::steady_clock::now()};
+    assert(futures.size() == n_events);
     hpx::wait_all(futures);
     auto end_work{std::chrono::steady_clock::now()};
-    //        hpx::cout << "Result: " << std::endl;
-    //        for (auto &f: futures) {
-    //            hpx::cout << f.get() << std::endl;
-    //        }
     hpx::cout << "Total time to schedule: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_scheduling - start).count() << "ms" << std::endl;
     hpx::cout << "Total time to process: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - start).count() << "ms" << std::endl;
     hpx::cout << "Time between scheduling end and processing end: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_work - end_scheduling).count() << "ms" << std::endl;
