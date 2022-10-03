@@ -5,14 +5,13 @@
 #include "Worker.h"
 
 #include <hpx/runtime_distributed.hpp>
+#include <hpx/semaphore.hpp>
 
-#include <optional>
-#include <unordered_map>
 #include <vector>
-#include <queue>
 
 namespace hpxdistributed::scheduler {
 
+    constexpr std::ptrdiff_t MAX_IN_FLIGHT = 40 * 128 * 2;
     class Scheduler {
     public:
         using algo_id_t = hpxdistributed::Worker::algo_id_t;
@@ -22,9 +21,8 @@ namespace hpxdistributed::scheduler {
         using AlgorithmsDependencies = Worker::AlgorithmsDependencies;
         AlgorithmsDependencies _algorithms_dependencies;
         std::vector<Worker> _workers;
-        std::size_t _max_inflight_events {0};
+        hpx::counting_semaphore<MAX_IN_FLIGHT> _inflight;
         bool _throttle {false};
-        std::queue<hpx::shared_future<EventContext<algo_id_t>>> _inflight_events;
         decltype(_workers)::size_type _next_worker{0};
 
     public:
