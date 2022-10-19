@@ -9,5 +9,15 @@ namespace hpxdistributed::algorithms {
     Algorithm::StatusCode AlgorithmD::initialize() {
         return SUCCESS;
     }
-    AlgorithmD::AlgorithmD() : Algorithm(1000000, "AlgorithmD") {}
+    Algorithm::StatusCode AlgorithmD::operator()(EventContext<id_t> &e){
+        volatile float sum = 0;
+        Eigen::MatrixXf AB =  (e.matrixA() + e.matrixB()).transpose();
+        Eigen::MatrixXf m =  e.matrixA();
+        for(int i = 0; i < _nIter ; ++i){
+            m += AB;
+            sum += m.norm();
+        }
+        return SUCCESS;
+    }
+    AlgorithmD::AlgorithmD() : Algorithm(1, "AlgorithmD") {}
 }// namespace hpxdistributed::algorithms

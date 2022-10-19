@@ -9,6 +9,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <Eigen/Dense>
 
 template<class ID>
 class EventContext {
@@ -31,6 +32,8 @@ public:
     [[nodiscard]] double &phi() { return _phi; };
     [[nodiscard]] IDType id() const { return _id; };
     [[nodiscard]] IDType &id() { return _id; };
+    [[nodiscard]] Eigen::MatrixXf &matrixA() { return _mA; };
+    [[nodiscard]] Eigen::MatrixXf &matrixB() { return _mB; };
     [[nodiscard]] const std::vector<ID> &requested() const { return _requested; };
 
 private:
@@ -38,6 +41,8 @@ private:
     double _eta;
     double _phi;
     IDType _id;
+    Eigen::MatrixXf _mA;
+    Eigen::MatrixXf _mB;
     std::vector<ID> _requested;
     template<class Archive>
     void serialize(Archive &, const unsigned int) {}
